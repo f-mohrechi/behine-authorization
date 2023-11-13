@@ -3,8 +3,8 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { getCities, getProvinces } from "../services/Home";
 
 export default function Home() {
   const [provinces, setProvinces] = useState([]);
@@ -15,46 +15,29 @@ export default function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!token) {
-      navigate("/");
-    } else {
-      const fetchProvinces = async () => {
+    const fetchData = async () => {
+      if (token) {
         try {
-          const response = await axios.get(
-            "http://rezayari.ir:5050/CityAndProvince/GetProvince",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          setProvinces(response.data);
+          const response = await getProvinces(token);
+          setProvinces(response);
         } catch (error) {
-          console.error("Error:", error.message);
+          console.error("Error fetching provinces:", error.message);
         }
-      };
+      } else {
+        navigate("/");
+      }
+    };
 
-      fetchProvinces();
-    }
-  }, [token]);
+    fetchData();
+  }, [token, navigate]);
 
   const handleProvinceChange = async (provinceId) => {
     setSelectedProvince(provinceId);
     try {
-      const response = await axios.get(
-        "http://rezayari.ir:5050/CityAndProvince/GetCity",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          params: {
-            provinceId: provinceId,
-          },
-        }
-      );
-      setCities(response.data);
+      const response = await getCities(token, provinceId);
+      setCities(response);
     } catch (error) {
-      console.error("Error:", error.message);
+      console.error("Error fetching cities:", error.message);
     }
   };
 
@@ -74,6 +57,7 @@ export default function Home() {
           borderRadius: 10,
         }}
       >
+        {console.log(token, "dmwod")}
         <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
           <InputLabel id="demo-select-small-label">استان</InputLabel>
           <Select
@@ -83,13 +67,14 @@ export default function Home() {
             label="استان"
             onChange={(e) => handleProvinceChange(e.target.value)}
           >
-            {provinces.map((item) => {
-              return (
-                <MenuItem key={item.id} value={item.name}>
-                  {item.name}
-                </MenuItem>
-              );
-            })}
+            {provinces &&
+              provinces.map((item) => {
+                return (
+                  <MenuItem key={item.id} value={item.name}>
+                    {item.name}
+                  </MenuItem>
+                );
+              })}
           </Select>
         </FormControl>
 
@@ -102,13 +87,14 @@ export default function Home() {
             label="شهر"
             onChange={handleCity}
           >
-            {cities.map((item) => {
-              return (
-                <MenuItem key={item.id} value={item.name}>
-                  {item.name}
-                </MenuItem>
-              );
-            })}
+            {cities &&
+              cities.map((item) => {
+                return (
+                  <MenuItem key={item.id} value={item.name}>
+                    {item.name}
+                  </MenuItem>
+                );
+              })}
           </Select>
         </FormControl>
       </div>

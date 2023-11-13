@@ -1,44 +1,29 @@
 import { Button, TextField } from "@mui/material";
-import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { LoginService } from "../services";
+
+const initialState = {
+  username: "",
+  password: "",
+};
 
 export default function Login() {
-  const [name, setName] = useState("");
-  const [pass, setPass] = useState("");
+  const [state, setState] = useState(initialState);
   const navigate = useNavigate();
 
-  function handleName(event) {
-    const value = event.target.value;
-    setName(value);
-  }
+  const handleState = (name, value) => {
+    setState((prevState) => ({ ...prevState, [name]: value }));
+  };
 
-  function handlePass(event) {
-    const value = event.target.value;
-    setPass(value);
-  }
-
-  const handleLogin = () => {
-    const url = "http://rezayari.ir:5050/Auth/Login";
-    const data = {
-      username: name,
-      password: pass,
-    };
-
-    axios
-      .post(url, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        console.log("Response:", response.data);
-        localStorage.setItem("token", response.data.token);
-        navigate("/home");
-      })
-      .catch((error) => {
-        console.error("Error:", error.message);
-      });
+  const handleLogin = async () => {
+    const res = await LoginService(state);
+    if (res) {
+      localStorage.setItem("token", res.data.token);
+      navigate("/home");
+    } else {
+      console.error("Error", res);
+    }
   };
 
   return (
@@ -55,16 +40,16 @@ export default function Login() {
         }}
       >
         <TextField
-          value={name}
-          onChange={handleName}
+          value={state.username}
+          onChange={(e) => handleState("username", e.target.value)}
           id="outlined-basic"
           label="نام کاربری"
           variant="outlined"
           style={{ margin: "20px 0", width: 250 }}
         />
         <TextField
-          value={pass}
-          onChange={handlePass}
+          value={state.password}
+          onChange={(e) => handleState("password", e.target.value)}
           id="outlined-basic"
           label="رمز عبور"
           variant="outlined"
@@ -73,7 +58,7 @@ export default function Login() {
         <Button
           variant="contained"
           style={{ margin: "20px 0", width: 250 }}
-          onClick={() => handleLogin()}
+          onClick={handleLogin}
         >
           ورود
         </Button>
