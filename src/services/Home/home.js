@@ -13,7 +13,7 @@ export async function getProvinces(token) {
   }
 }
 
-export async function getCities(token, provinceId) {
+export async function getCities(token) {
   try {
     const response = await request.get(`/CityAndProvince/GetCity`, {
       headers: {

@@ -1,52 +1,52 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { getCities, getProvinces } from "../services/Home";
+import React, { useState, useContext, useEffect } from "react";
 import Layout from "../components/layout/Layout";
 import SelectInput from "../components/mainComponents/SelectInput";
 import NotAllowed from "../components/errors/NotAllowed";
+import { useQuery } from "react-query";
+import { DataContext } from "../contexts/DataContext";
+import { getProvinces, getCities } from "../services/Home";
 
 export default function Home() {
-  const [provinces, setProvinces] = useState([]);
   const token = localStorage.getItem("token");
-  const [cities, setCities] = useState([]);
-  const [selectedProvince, setSelectedProvince] = useState(null);
-  const [selectedCity, setSelectedCity] = useState(null);
-  const navigate = useNavigate();
+  const { setProvinces, setCities } = useContext(DataContext);
+  const [selectedProvince, setSelectedProvince] = useState();
+  const [selectedCity, setSelectedCity] = useState();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (token) {
-        try {
-          const response = await getProvinces(token);
-          setProvinces(response);
-        } catch (error) {
-          console.error("Error fetching provinces:", error.message);
-        }
-      }
-    };
+  const { data: provincesData } = useQuery(
+    "provinces",
+    () => getProvinces(token),
+    {
+      onSuccess: (data) => {
+        setProvinces(data);
+      },
+    }
+  );
 
-    fetchData();
-  }, [token, navigate]);
+  const { data: citiesData } = useQuery(
+    ["cities", selectedProvince],
+    () => getCities(token, selectedProvince),
+    {
+      enabled: !!selectedProvince,
+      onSuccess: (data) => {
+        setCities(data);
+      },
+    }
+  );
 
   if (!token) {
     return <NotAllowed />;
   }
 
-  const handleProvinceChange = async (provinceId) => {
+  const handleProvinceChange = (provinceId) => {
     setSelectedProvince(provinceId);
-    try {
-      const response = await getCities(token, provinceId);
-      setCities(response);
-    } catch (error) {
-      console.error("Error fetching cities:", error.message);
-    }
   };
 
-  const handleCity = (event) => {
-    setSelectedCity(event.target.value);
+  const handleCityChange = (cityId) => {
+    setSelectedCity(cityId);
   };
+
   return (
-    <Layout src={"./img/home-back.svg"}>
+    <Layout src="./img/home-back.svg">
       <div
         style={{
           display: "flex",
@@ -59,18 +59,17 @@ export default function Home() {
         </h2>
 
         <SelectInput
-          label={"استان"}
+          label="استان"
           value={selectedProvince}
           onChange={(e) => handleProvinceChange(e.target.value)}
-          data={provinces}
+          data={provincesData}
         />
 
         <SelectInput
-          label={"شهر"}
+          label="شهر"
           value={selectedCity}
-          onChange={handleCity}
-          provinces={provinces}
-          data={cities}
+          onChange={(e) => handleCityChange(e.target.value)}
+          data={citiesData}
         />
       </div>
     </Layout>
