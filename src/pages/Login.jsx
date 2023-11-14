@@ -1,7 +1,10 @@
-import { Button, TextField } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginService } from "../services";
+import PrimaryButton from "../components/mainComponents/PrimaryButton";
+import PasswordFormControl from "../components/mainComponents/PasswordFormControl";
+import TextInput from "../components/mainComponents/TextInput";
+import Layout from "../components/layout/Layout";
 
 const initialState = {
   username: "",
@@ -10,6 +13,7 @@ const initialState = {
 
 export default function Login() {
   const [state, setState] = useState(initialState);
+
   const navigate = useNavigate();
 
   const handleState = (name, value) => {
@@ -27,42 +31,35 @@ export default function Login() {
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", margin: 50 }}>
+    <Layout src={"./img/back.svg"}>
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          padding: "30px 50px",
-          width: 500,
-          boxShadow: "0px 0px 15px 5px #E0E0E0",
-          borderRadius: 10,
+          justifyContent: "space-between",
         }}
       >
-        <TextField
-          value={state.username}
-          onChange={(e) => handleState("username", e.target.value)}
-          id="outlined-basic"
-          label="نام کاربری"
-          variant="outlined"
-          style={{ margin: "20px 0", width: 250 }}
-        />
-        <TextField
-          value={state.password}
-          onChange={(e) => handleState("password", e.target.value)}
-          id="outlined-basic"
-          label="رمز عبور"
-          variant="outlined"
-          style={{ margin: "20px 0", width: 250 }}
-        />
-        <Button
-          variant="contained"
-          style={{ margin: "20px 0", width: 250 }}
-          onClick={handleLogin}
-        >
-          ورود
-        </Button>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <h1 style={{ color: "#4a839e", textAlign: "center" }}>ورود</h1>
+
+          <div style={{ margin: "20px 0" }}>
+            <TextInput
+              value={state.username}
+              onChange={(e) => handleState("username", e.target.value)}
+            />
+          </div>
+
+          <PasswordFormControl
+            value={state.password}
+            onChange={(e) => handleState("password", e.target.value)}
+          />
+        </div>
+
+        <div style={{ margin: "40px 0" }}>
+          <PrimaryButton handleLogin={handleLogin} />
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 }

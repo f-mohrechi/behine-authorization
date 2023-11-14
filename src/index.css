@@ -12,6 +12,7 @@ body {
   font-family: "iransans", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #393c49;
 }
 
 code {

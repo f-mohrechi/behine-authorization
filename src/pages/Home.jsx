@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
 import { useNavigate } from "react-router-dom";
 import { getCities, getProvinces } from "../services/Home";
+import Layout from "../components/layout/Layout";
+import SelectInput from "../components/mainComponents/SelectInput";
 
 export default function Home() {
   const [provinces, setProvinces] = useState([]);
@@ -45,59 +43,33 @@ export default function Home() {
     setSelectedCity(event.target.value);
   };
   return (
-    <div style={{ display: "flex", justifyContent: "center", margin: 50 }}>
+    <Layout src={"./img/home-back.svg"}>
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          padding: "30px 50px",
-          width: 500,
-          boxShadow: "0px 0px 15px 5px #E0E0E0",
-          borderRadius: 10,
         }}
       >
-        {console.log(token, "dmwod")}
-        <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-          <InputLabel id="demo-select-small-label">استان</InputLabel>
-          <Select
-            labelId="demo-select-small-label"
-            id="demo-select-small"
-            value={selectedProvince}
-            label="استان"
-            onChange={(e) => handleProvinceChange(e.target.value)}
-          >
-            {provinces &&
-              provinces.map((item) => {
-                return (
-                  <MenuItem key={item.id} value={item.name}>
-                    {item.name}
-                  </MenuItem>
-                );
-              })}
-          </Select>
-        </FormControl>
+        <h2 style={{ color: "#4a839e", textAlign: "center" }}>
+          استان و شهر خود را انتخاب کنید.
+        </h2>
 
-        <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-          <InputLabel id="demo-select-small-label">شهر</InputLabel>
-          <Select
-            labelId="demo-select-small-label"
-            id="demo-select-small"
-            value={selectedCity}
-            label="شهر"
-            onChange={handleCity}
-          >
-            {cities &&
-              cities.map((item) => {
-                return (
-                  <MenuItem key={item.id} value={item.name}>
-                    {item.name}
-                  </MenuItem>
-                );
-              })}
-          </Select>
-        </FormControl>
+        <SelectInput
+          label={"استان"}
+          value={selectedProvince}
+          onChange={(e) => handleProvinceChange(e.target.value)}
+          data={provinces}
+        />
+
+        <SelectInput
+          label={"شهر"}
+          value={selectedCity}
+          onChange={handleCity}
+          provinces={provinces}
+          data={cities}
+        />
       </div>
-    </div>
+    </Layout>
   );
 }
