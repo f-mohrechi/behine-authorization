@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getCities, getProvinces } from "../services/Home";
 import Layout from "../components/layout/Layout";
 import SelectInput from "../components/mainComponents/SelectInput";
+import NotAllowed from "../components/errors/NotAllowed";
 
 export default function Home() {
   const [provinces, setProvinces] = useState([]);
@@ -21,13 +22,15 @@ export default function Home() {
         } catch (error) {
           console.error("Error fetching provinces:", error.message);
         }
-      } else {
-        navigate("/");
       }
     };
 
     fetchData();
   }, [token, navigate]);
+
+  if (!token) {
+    return <NotAllowed />;
+  }
 
   const handleProvinceChange = async (provinceId) => {
     setSelectedProvince(provinceId);

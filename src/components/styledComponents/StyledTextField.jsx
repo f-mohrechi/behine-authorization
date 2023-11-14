@@ -7,6 +7,7 @@ const StyledTextField = styled(TextField)`
     background-color: #393c49;
     border-radius: 8px;
     & .MuiOutlinedInput-root {
+      color: #fff;
       &.Mui-focused fieldset {
         border-color: #4a839e;
       }
